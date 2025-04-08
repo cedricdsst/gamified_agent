@@ -1,6 +1,6 @@
 # Star Buddy Chat
 
-An emotional AI chatbot that responds in French with different emotions.
+A conceptual  gamified ai agent.
 
 ## Setup
 
@@ -22,15 +22,3 @@ python main.py
 http://localhost:8000
 ```
 
-## Features
-
-- Web-based chat interface
-- AI responses include both text and an emotion indicator
-- Conversation history is maintained per session
-- The AI speaks only in French
-
-## Technical Details
-
-- Backend: FastAPI
-- AI: GPT-4o via pydantic-ai
-- Frontend: HTML/CSS/JavaScript 
