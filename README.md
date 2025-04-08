@@ -1,4 +1,4 @@
-# Star Buddy Chat
+# gamified agent
 
 A conceptual  gamified ai agent.
 
