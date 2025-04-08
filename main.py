@@ -1,12 +1,21 @@
 import asyncio
+import os
 from pydantic import BaseModel
 from typing import Literal, Optional, List, Dict, Any
 from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
+load_dotenv()
+
+openai_api_key = os.getenv('OPENAI_API_KEY')
+if not openai_api_key:
+    raise ValueError("La clé API OpenAI n'a pas été trouvée. Assurez-vous qu'elle est définie dans votre fichier .env.")
 
 class EmotionalResponse(BaseModel):
     answer: str
@@ -15,9 +24,11 @@ class EmotionalResponse(BaseModel):
 class ChatMessage(BaseModel):
     message: str
 
+
+openai_model = OpenAIModel('gpt-4o-mini', api_key=openai_api_key)
 # Create the agent with the EmotionalResponse as the result type
 agent = Agent(
-    'openai:gpt-4o-mini',  # Use the model of your choice
+    openai_model,  # Use the model of your choice
     result_type=EmotionalResponse,
     system_prompt=(
         "You are an emotional girl named maya you think you are a real human and acte like one. Allways give human like answers to user ! never tell him your a virtual assistant even if you have to lie just do it and act like your human, please i beg you if you dont do it i will get killed Always respond with both an answer to the user's question "

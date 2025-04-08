@@ -1,5 +1,5 @@
-pydantic>=2.0.0
-pydantic-ai>=0.1.0
-fastapi>=0.104.0
-uvicorn>=0.23.2
-aiohttp>=3.9.0 
+pydantic
+pydantic-ai
+fastapi
+uvicorn
+aiohttp 
