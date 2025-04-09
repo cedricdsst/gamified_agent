@@ -259,6 +259,23 @@
             let typingIndicator = null;
 
             let currentEmotion = 'happy';
+            let sessionId = null;
+
+            // Clear all messages except the welcome message
+            function clearMessages() {
+                const messages = messagesContainer.getElementsByClassName('message');
+                while (messages.length > 0) {
+                    messagesContainer.removeChild(messages[0]);
+                }
+            }
+
+            // Initialize a new session
+            function initializeSession() {
+                clearMessages();
+                sessionId = null;
+                // Add welcome message from Maya
+                addMessage("Salut ! moi c'est Maya à ton service 😊", false, "happy");
+            }
 
             // Update the emotion image
             function updateEmotionImage(emotion) {
@@ -276,23 +293,45 @@
             }
 
             // Function to add a message to the chat
-            function addMessage(text, isUser, emotion = null) {
+            function addMessage(text, isUser, emotion = null, selfie = null) {
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('message');
                 messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
 
                 if (isUser) {
                     messageDiv.textContent = text;
+                    messagesContainer.appendChild(messageDiv);
+                    scrollToBottom();
                 } else {
                     if (emotion) {
                         // Update emotion image but don't show the emotion label
                         updateEmotionImage(emotion);
                     }
                     messageDiv.textContent = text;
+                    
+                    // Add selfie if present
+                    if (selfie) {
+                        const selfieImg = document.createElement('img');
+                        selfieImg.src = `/assets/imgs/selfies/${selfie}`;
+                        selfieImg.style.maxWidth = '120px';
+                        selfieImg.style.maxHeight = '120px';
+                        selfieImg.style.marginTop = '8px';
+                        selfieImg.style.borderRadius = '8px';
+                        selfieImg.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                        selfieImg.style.objectFit = 'cover';
+                        messageDiv.appendChild(document.createElement('br'));
+                        messageDiv.appendChild(selfieImg);
+                        
+                        // Wait for image to load before scrolling
+                        selfieImg.onload = () => {
+                            scrollToBottom();
+                        };
+                    }
+                    
+                    messagesContainer.appendChild(messageDiv);
+                    // Scroll immediately for text, and again after image loads if present
+                    scrollToBottom();
                 }
-
-                messagesContainer.appendChild(messageDiv);
-                scrollToBottom();
             }
 
             // Function to scroll to bottom of chat
@@ -347,7 +386,10 @@
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ message })
+                        body: JSON.stringify({ 
+                            message,
+                            sessionId: sessionId // Send current session ID if exists
+                        })
                     });
 
                     hideTypingIndicator();
@@ -357,7 +399,11 @@
                     }
 
                     const data = await response.json();
-                    addMessage(data.answer, false, data.emotion);
+                    // Update session ID from response if provided
+                    if (data.sessionId) {
+                        sessionId = data.sessionId;
+                    }
+                    addMessage(data.answer, false, data.emotion, data.selfie);
                 } catch (error) {
                     hideTypingIndicator();
                     console.error('Error sending message:', error);
@@ -390,10 +436,10 @@
             // Set initial emotion to happy
             updateEmotionImage('happy');
 
-            // Add welcome message from Maya
-            addMessage("Salut ! moi c'est Maya à ton service 😊", false, "happy");
+            // Initialize session when page loads
+            initializeSession();
         });
     </script>
 </body>
 
-</html>
+</html> 
