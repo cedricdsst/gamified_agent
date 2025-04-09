@@ -28,7 +28,7 @@ class ChatMessage(BaseModel):
     sessionId: Optional[str] = None
 
 
-openai_model = OpenAIModel('gpt-4o-mini', api_key=openai_api_key)
+openai_model = OpenAIModel('gpt-4o-mini')
 # Create the agent with the EmotionalResponse as the result type
 agent = Agent(
     openai_model,  # Use the model of your choice
